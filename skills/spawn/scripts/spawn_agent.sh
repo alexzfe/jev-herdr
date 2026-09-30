@@ -2,11 +2,10 @@
 # Let Jev pick the model and effort for a task, then start a Claude Code agent for it
 # in a Herdr pane.
 #
-# Usage: spawn_agent.sh [--go] [--watch] [--tab LABEL] [--model M] [--effort E]
+# Usage: spawn_agent.sh [--go --pane ID] [--watch] [--model M] [--effort E]
 #                       [--interval SECS] <name> <task...>
-#   Agents run in a background tab (default label "agents") of the caller's workspace,
-#   created without taking focus. Idle panes there are reused; otherwise the largest
-#   pane is split.
+#   --pane is an existing pane at a shell prompt; the caller creates it (the herdr
+#   skill's placement rules decide where).
 #   Without --go it only prints what it would do (dry run).
 #   --model / --effort override what Jev picks. If Jev fails, whichever is still unset
 #   is left out, so claude starts on the user's own default model or effort.
@@ -26,13 +25,13 @@ done
 herdr_ver="$(herdr --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)"
 [[ "$herdr_ver" == 0.9.* ]] || echo "tested with herdr 0.9.x, found ${herdr_ver:-unknown}" >&2
 
-go=0 watch=0 interval=300 tab_label=agents model="" effort=""
+go=0 watch=0 interval=300 pane="" model="" effort=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --go) go=1; shift ;;
     --watch) watch=1; shift ;;
     --interval) interval="$2"; shift 2 ;;
-    --tab) tab_label="$2"; shift 2 ;;
+    --pane) pane="$2"; shift 2 ;;
     --model) model="$2"; shift 2 ;;
     --effort) effort="$2"; shift 2 ;;
     *) break ;;
@@ -46,7 +45,8 @@ if [[ $watch -eq 0 ]]; then
   fi
   [[ "$w" == "1" ]] && watch=1
 fi
-[[ $# -ge 2 ]] || { echo "usage: $0 [--go] [--watch] [--tab LABEL] [--model M] [--effort E] [--interval SECS] <name> <task...>" >&2; exit 2; }
+[[ $# -ge 2 ]] || { echo "usage: $0 [--go --pane ID] [--watch] [--model M] [--effort E] [--interval SECS] <name> <task...>" >&2; exit 2; }
+[[ $go -eq 0 || -n "$pane" ]] || { echo "--go needs --pane ID: create the pane first (herdr skill)" >&2; exit 2; }
 name="$1"; shift
 task="$*"
 
@@ -79,40 +79,19 @@ flags=()
 shown="${model:-default model}, ${effort:-default} effort"
 
 if [[ $go -eq 0 ]]; then
-  echo "dry run: would open a pane in tab '$tab_label', start '$name' as claude ${flags[*]:-(no flags)}, and prompt:" >&2
+  echo "dry run: would start '$name' in pane ${pane:-<pane>} as claude ${flags[*]:-(no flags)}, and prompt:" >&2
   echo "  $task" >&2
   exit 0
 fi
 
 test "${HERDR_ENV:-}" = 1 || { echo "not running inside Herdr" >&2; exit 1; }
 
-ws="$HERDR_WORKSPACE_ID"
-start() { herdr agent start "$name" --kind claude --pane "$1" -- ${flags[@]+"${flags[@]}"} >/dev/null 2>&1; }
-
-tab="$(herdr tab list --workspace "$ws" | jq -r --arg l "$tab_label" '[.result.tabs[] | select(.label == $l)][0].tab_id // empty')"
-started=0
-if [[ -z "$tab" ]]; then
-  pane="$(herdr tab create --workspace "$ws" --cwd "$PWD" --label "$tab_label" --no-focus | jq -r .result.root_pane.pane_id)"
-  start "$pane" && started=1
-else
-  # Reuse a pane whose agent has exited; agent start refuses panes that are busy.
-  for p in $(herdr pane list --workspace "$ws" | jq -r --arg t "$tab" '.result.panes[] | select(.tab_id == $t and .agent == null) | .pane_id'); do
-    if start "$p"; then pane="$p"; started=1; break; fi
-  done
-  if [[ $started -eq 0 ]]; then
-    # Split the largest pane: sideways if it is wide (cells are ~2:1 tall), else down.
-    first="$(herdr pane list --workspace "$ws" | jq -r --arg t "$tab" '[.result.panes[] | select(.tab_id == $t)][0].pane_id')"
-    read -r target dir < <(herdr pane layout --pane "$first" | jq -r '.result.layout.panes | max_by(.rect.width * .rect.height)
-      | "\(.pane_id) \(if .rect.width > 2 * .rect.height then "right" else "down" end)"')
-    pane="$(herdr pane split "$target" --direction "$dir" --cwd "$PWD" --no-focus | jq -r .result.pane.pane_id)"
-    start "$pane" && started=1
-  fi
-fi
-[[ $started -eq 1 ]] || { echo "failed to start agent '$name' in tab '$tab_label'" >&2; exit 1; }
+out="$(herdr agent start "$name" --kind claude --pane "$pane" -- ${flags[@]+"${flags[@]}"} 2>&1)" \
+  || { echo "failed to start agent '$name' in pane $pane: $out" >&2; exit 1; }
 # No --wait: the caller doesn't need to block here, and watch_agent.py already waits
 # for "working" status itself before it starts checking on the agent.
 herdr agent prompt "$name" "$task" >/dev/null
-echo "started '$name' ($shown) in pane $pane (tab '$tab_label')"
+echo "started '$name' ($shown) in pane $pane"
 
 mkdir -p "$state"
 jq -nc --arg ts "$(date +%FT%T)" --arg name "$name" --arg pane "$pane" --arg task "$task" \

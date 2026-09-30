@@ -2,8 +2,8 @@
 
 Hand subtasks to new Claude Code agents without leaving your pane. You ask Claude to
 spin up an agent; [TypeSafe's Jev](https://typesafe.ai) picks the agent's **model** and
-**effort** from the task, and the agent starts in a background tab of your
-[Herdr](https://herdr.dev) workspace, where you can watch it or take over.
+**effort** from the task, and the agent starts in a [Herdr](https://herdr.dev) pane
+next to yours, where you can watch it or take over.
 
 Not affiliated with TypeSafe or Herdr. You need your own TypeSafe API key.
 
@@ -11,9 +11,9 @@ Not affiliated with TypeSafe or Herdr. You need your own TypeSafe API key.
 
 1. **Routes.** One Jev request per task answers two questions: which model (haiku,
    sonnet or opus) and how much effort (low, medium, high, xhigh or max).
-2. **Places.** The agent starts in a pane of a background `agents` tab in your current
-   workspace, so your view stays where it is. Panes of exited agents are reused;
-   otherwise the largest pane is split.
+2. **Places.** Claude creates the agent's pane the way Herdr's own skill says to: a
+   split beside your pane that leaves your focus where it is, or wherever you ask
+   ("in a new tab", "below me").
 3. **Logs.** Every spawn goes to `~/.local/state/jev-herdr/decisions.jsonl` with Jev's
    answer and the tokens it billed, so you can check routing and cost from real runs.
 
@@ -73,13 +73,15 @@ The scripts also work by hand:
 
 ```bash
 scripts=$(echo ~/.claude/plugins/cache/jev-herdr/jev-herdr/*/skills/spawn/scripts)
-$scripts/spawn_agent.sh leakhunt "Investigate the memory leak that appears after hours"   # dry run
-$scripts/spawn_agent.sh --go leakhunt "Investigate the memory leak that appears after hours"
-$scripts/pick_model.py "Add a --verbose flag to the CLI"                                    # routing only
+$scripts/pick_model.py "Add a --verbose flag to the CLI"                   # routing only
+$scripts/spawn_agent.sh leakhunt "Investigate the memory leak after hours"   # dry run
+pane=$(herdr pane split --current --direction right --cwd "$PWD" --no-focus | jq -r .result.pane.pane_id)
+$scripts/spawn_agent.sh --go --pane "$pane" leakhunt "Investigate the memory leak after hours"
 ```
 
-`spawn_agent.sh` options: `--model` / `--effort` override Jev, `--tab LABEL` picks the
-tab, `--watch` turns on the watcher, `--interval SECS` changes how often it checks.
+`spawn_agent.sh` options: `--pane ID` is the pane to start in (required with `--go`),
+`--model` / `--effort` override Jev, `--watch` turns on the watcher, `--interval SECS`
+changes how often it checks.
 
 ## Cost
 

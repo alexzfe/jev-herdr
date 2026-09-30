@@ -1,15 +1,14 @@
 ---
 name: spawn
-description: Spawn a Claude Code agent in a background Herdr tab to take a delegated subtask, with TypeSafe's Jev picking its model and effort. Use when asked to spawn, spin up or hand off work to an agent, or when long, open-ended work should run in parallel while you continue. Requires HERDR_ENV=1.
+description: Spawn a Claude Code agent in a Herdr pane to take a delegated subtask, with TypeSafe's Jev picking its model and effort. Use when asked to spawn, spin up or hand off work to an agent, or when long, open-ended work should run in parallel while you continue. Requires HERDR_ENV=1.
 ---
 
 # Jev agents for Herdr
 
 `scripts/spawn_agent.sh` (relative to this skill's base directory) asks Jev which model
 (haiku, sonnet or opus) and effort (low to max) suit the task, then starts
-`claude --model <m> --effort <e>` in a pane of a background tab labeled `agents` in the
-caller's workspace, without taking focus. If Jev is unreachable, the agent starts on
-the user's default model and effort.
+`claude --model <m> --effort <e>` in a pane you create. If Jev is unreachable, the
+agent starts on the user's default model and effort.
 
 ## Spawn an agent
 
@@ -21,18 +20,19 @@ the user's default model and effort.
    report back. Jev routes on this text, so describe the task's real difficulty.
 3. Pick a name matching `[a-z][a-z0-9_-]{0,31}`, unique among live agents
    (`herdr agent list`).
-4. From the directory the agent should work in, run:
+4. Create the agent's pane following the `herdr` skill's placement rules (if that skill
+   isn't loaded, `herdr --skill` prints it), and note the returned pane ID.
+5. From the directory the agent should work in, run:
 
    ```bash
-   <skill-dir>/scripts/spawn_agent.sh --go <name> "<brief>"
+   <skill-dir>/scripts/spawn_agent.sh --go --pane <pane-id> <name> "<brief>"
    ```
 
    Options: `--model M` / `--effort E` when the user names them (Jev fills in whichever
-   is missing), `--tab LABEL` for a different tab, `--watch` when the user asks for the
-   agent to be watched or stepped up if it gets stuck (see below). Without `--go` it
-   only prints what it would do.
-5. Done when it prints `started '<name>' (...)`. Tell the user the model, effort and
-   Jev's confidence from the `jev:` line, and the tab.
+   is missing), `--watch` when the user asks for the agent to be watched or stepped up
+   if it gets stuck (see below). Without `--go` it only prints what it would do.
+6. Done when it prints `started '<name>' (...)`. Tell the user the model, effort and
+   Jev's confidence from the `jev:` line, and the pane.
    - `jev key problem` means the user's TypeSafe key is missing or rejected, so every
      spawn falls back to the user's default model. Lead your reply with it and the fix
      it prints: set `TYPESAFE_API_KEY=...` in `~/.config/jev-herdr/env`.
