@@ -67,7 +67,7 @@ QUESTIONS = {
 
 def pick(task):
     try:
-        resp = ask({"state": {"task": task}, "questions": QUESTIONS}, timeout=10)
+        resp = ask({"state": {"task": task}, "questions": QUESTIONS}, timeout=3)
         ans = resp["answers"]
         m, e = ans["model"], ans["effort"]
         return {
