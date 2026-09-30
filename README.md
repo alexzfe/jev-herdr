@@ -5,6 +5,8 @@ spin up an agent; [TypeSafe's Jev](https://typesafe.ai) picks the agent's **mode
 **effort** from the task, and the agent starts in a [Herdr](https://herdr.dev) pane
 next to yours, where you can watch it or take over.
 
+![Claude spawns two agents: haiku for a quick listing, opus for a race-condition review](docs/demo.gif)
+
 Not affiliated with TypeSafe or Herdr. You need your own TypeSafe API key.
 
 ## What it does
