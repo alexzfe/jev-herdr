@@ -32,9 +32,7 @@ With `--watch`, a background watcher checks the agent every 5 minutes while it w
   once on opus. At most two step-ups per agent. Your default model setting is untouched.
 - An agent waiting on you (an approval or a question) is never counted as struggling.
 
-The step-up mechanics are tested; how well Jev spots a genuinely stuck agent is not yet
-known, which is why it is off by default. Stopping an agent can interrupt a command or
-edit in progress; the resumed agent sees where it was cut off.
+The step-up mechanics are barely tested. 
 
 ## Requirements
 
@@ -43,7 +41,7 @@ edit in progress; the resumed agent sees where it was cut off.
 - `python3` (standard library only), `jq`
 - A TypeSafe API key from [console.typesafe.ai](https://console.typesafe.ai)
 
-Tested on Linux. macOS should work but is untested; reports welcome.
+Tested on Linux. macOS should work but is untested.
 
 ## Install
 
