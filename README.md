@@ -17,9 +17,9 @@ Not affiliated with TypeSafe or Herdr. You need your own TypeSafe API key.
 3. **Logs.** Every spawn goes to `~/.local/state/jev-herdr/decisions.jsonl` with Jev's
    answer and the tokens it billed, so you can check routing and cost from real runs.
 
-If Jev is unreachable, the agent starts anyway on sonnet with medium effort. If your
-key is missing or rejected, the agent still starts on those defaults and Claude tells
-you how to fix the key.
+If Jev is unreachable, the agent starts anyway on your own Claude Code default model
+and effort (no `--model`/`--effort` flags), without the watcher. If your key is missing
+or rejected, the same happens and Claude tells you how to fix the key.
 
 ### Watching (opt-in, experimental)
 

@@ -9,7 +9,7 @@ description: Spawn a Claude Code agent in a background Herdr tab to take a deleg
 (haiku, sonnet or opus) and effort (low to max) suit the task, then starts
 `claude --model <m> --effort <e>` in a pane of a background tab labeled `agents` in the
 caller's workspace, without taking focus. If Jev is unreachable, the agent starts on
-sonnet with medium effort.
+the user's default model and effort.
 
 ## Spawn an agent
 
@@ -34,9 +34,10 @@ sonnet with medium effort.
 5. Done when it prints `started '<name>' (...)`. Tell the user the model, effort and
    Jev's confidence from the `jev:` line, and the tab.
    - `jev key problem` means the user's TypeSafe key is missing or rejected, so every
-     spawn is falling back to the defaults. Lead your reply with it and the fix it
-     prints: set `TYPESAFE_API_KEY=...` in `~/.config/jev-herdr/env`.
-   - `jev unavailable, using fallback` means a network or API error; mention the reason.
+     spawn falls back to the user's default model. Lead your reply with it and the fix
+     it prints: set `TYPESAFE_API_KEY=...` in `~/.config/jev-herdr/env`.
+   - `jev unavailable, starting on your default model` means a network or API error;
+     mention the reason.
 
 ## Follow up
 

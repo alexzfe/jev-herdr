@@ -18,7 +18,8 @@ from jev import JevError, ask
 
 TIERS = ["haiku", "sonnet", "opus"]
 EFFORTS = ["low", "medium", "high", "xhigh", "max"]
-FALLBACK = {"model": "sonnet", "effort": "medium"}
+# None means no flag: the agent starts on the user's own Claude Code defaults.
+FALLBACK = {"model": None, "effort": None}
 STATE = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local" / "state") / "jev-herdr"
 LOG = STATE / "decisions.jsonl"
 
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     if as_json:
         print(json.dumps(r))
     elif r["fallback"]:
-        print(f"model={r['model']}  effort={r['effort']}  (FALLBACK: {r['error']})")
+        print(f"model=default  effort=default  (FALLBACK: {r['error']})")
     else:
         probs = " ".join(f"{k}={v:.2f}" for k, v in r["probabilities"].items())
         print(f"model={r['model']}  conf={r['confidence']:.2f}  [{probs}]")
