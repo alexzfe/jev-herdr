@@ -31,8 +31,8 @@ agent starts on the user's default model and effort.
    Options: `--model M` / `--effort E` when the user names them (Jev fills in whichever
    is missing), `--watch` when the user asks for the agent to be watched or stepped up
    if it gets stuck (see below). Without `--go` it only prints what it would do.
-6. Done when it prints `started '<name>' (...)`. Tell the user the model, effort and
-   Jev's confidence from the `jev:` line, and the pane.
+6. Done when it prints a `spawned <name> → …` line. End your reply with that line
+   verbatim, one per agent when you spawn several.
    - `jev key problem` means the user's TypeSafe key is missing or rejected, so every
      spawn falls back to the user's default model. Lead your reply with it and the fix
      it prints: set `TYPESAFE_API_KEY=...` in `~/.config/jev-herdr/env`.

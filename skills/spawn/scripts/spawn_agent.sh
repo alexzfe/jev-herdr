@@ -50,7 +50,7 @@ fi
 name="$1"; shift
 task="$*"
 
-pick="null"
+pick="null" user_model="$model"
 if [[ -z "$model" || -z "$effort" ]]; then
   # pick_model.py falls back on its own; this covers it crashing outright.
   pick="$(python3 "$here/pick_model.py" --json "$task")" \
@@ -76,7 +76,19 @@ fi
 flags=()
 [[ -n "$model" ]] && flags+=(--model "$model")
 [[ -n "$effort" ]] && flags+=(--effort "$effort")
-shown="${model:-default model}, ${effort:-default} effort"
+# One fixed-format line the skill repeats to the user, so every spawn is easy to audit.
+if [[ "$pick" == null ]]; then
+  why="set by you"
+elif [[ "$(jq -r .fallback <<<"$pick")" == true ]]; then
+  why="Jev unavailable, your defaults"
+elif [[ -n "$user_model" ]]; then
+  why="model set by you, effort by Jev"
+else
+  why="Jev $(jq -r '.confidence * 100 | round' <<<"$pick")% sure"
+fi
+brief="${task//$'\n'/ }"
+(( ${#brief} > 60 )) && brief="${brief:0:60}…"
+summary="spawned $name → ${model:-default model} / ${effort:-default} effort ($why) in $pane · \"$brief\""
 
 if [[ $go -eq 0 ]]; then
   echo "dry run: would start '$name' in pane ${pane:-<pane>} as claude ${flags[*]:-(no flags)}, and prompt:" >&2
@@ -91,7 +103,7 @@ out="$(herdr agent start "$name" --kind claude --pane "$pane" -- ${flags[@]+"${f
 # No --wait: the caller doesn't need to block here, and watch_agent.py already waits
 # for "working" status itself before it starts checking on the agent.
 herdr agent prompt "$name" "$task" >/dev/null
-echo "started '$name' ($shown) in pane $pane"
+echo "$summary"
 
 mkdir -p "$state"
 jq -nc --arg ts "$(date +%FT%T)" --arg name "$name" --arg pane "$pane" --arg task "$task" \

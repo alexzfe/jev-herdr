@@ -67,7 +67,12 @@ Inside a Herdr pane, ask Claude to hand something off:
 
 > Spin up an agent to find why the websocket tests are flaky.
 
-or invoke the skill directly with `/jev-herdr:spawn <task>`.
+or invoke the skill directly with `/jev-herdr:spawn <task>`. Claude ends its reply with
+one line per agent, so you can see what was routed where:
+
+```
+spawned flaky-ws → opus / xhigh effort (Jev 99% sure) in w1:p4 · "Find why the websocket tests are flaky. They fail about 1 in…"
+```
 
 The scripts also work by hand:
 
