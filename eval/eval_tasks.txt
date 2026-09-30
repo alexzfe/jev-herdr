@@ -1,0 +1,35 @@
+haiku	Rename the function getUser to fetchUser in src/api.ts and update its imports.
+haiku	Run the test suite and tell me which tests fail.
+haiku	Add a .gitignore entry for the .env file.
+haiku	Find where the config file is loaded and report the path.
+sonnet	Add a --verbose flag to the CLI that prints each request URL.
+sonnet	Implement pagination for the /users endpoint with tests.
+sonnet	Write unit tests for the date parsing helpers in utils/dates.py.
+sonnet	Migrate the settings page from class components to React hooks.
+opus	Figure out why the websocket connection intermittently drops messages under load.
+opus	Design the data model and sync strategy for offline-first mobile support.
+opus	Refactor the monolithic payment module into separate services without breaking existing callers.
+opus	Review this authentication diff for security vulnerabilities.
+sonnet	Build a small dashboard page that shows live job queue stats, iterating on the layout.
+haiku	Bump the lodash version in package.json to the latest patch.
+opus	Investigate the memory leak that appears after the app runs for several hours.
+haiku	Read-only. List every TODO and FIXME comment under src/ with file and line number, grouped by file. Write the list to todo-report.md and reply with its path.
+haiku	Update the copyright year from 2025 to 2026 in LICENSE and in the footer of docs/index.html. Change nothing else.
+haiku	Run npm outdated in the repo root and summarise which dependencies have a new major version available. Read-only; do not install anything.
+haiku	Read-only. Find every environment variable the app reads (grep for process.env and os.environ) and write each one, with the file that reads it, to env-vars.md.
+haiku	Fix the three ESLint errors that npm run lint reports in src/components/Header.tsx: two unused imports and a missing semicolon. Don't touch other files.
+haiku	Add type hints to the 12 small pure functions in utils/strings.py and make mypy pass on that file. Don't change behaviour.
+sonnet	Add a --dry-run flag to scripts/deploy.sh that prints each command instead of running it. Keep existing behaviour when the flag is absent, and check both paths by hand against a fake target.
+sonnet	The CSV export in reports/export.py breaks when a field contains a comma or newline. Switch it to the csv module with proper quoting and add a test with such a field.
+sonnet	Write integration tests for the /login and /logout endpoints in tests/api/, using the test client fixture in conftest.py. Cover success, wrong password and an expired session.
+sonnet	Replace the hand-rolled retry loop in src/http/client.ts with exponential backoff and jitter: at most 5 attempts, retrying only on 5xx responses and network errors. Update its unit tests.
+sonnet	Add a dark mode toggle to the settings page. Colours already live in CSS variables in styles/theme.css; persist the choice in localStorage and follow prefers-color-scheme by default.
+sonnet	CI takes 14 minutes. Add npm and pip caching to .github/workflows/ci.yml and split lint and test into parallel jobs. Push to a branch and report the new timing.
+sonnet	Convert setup.py and requirements.txt to a pyproject.toml using hatchling, keeping the same dependencies and entry points, and confirm pip install -e . still works.
+sonnet	Upgrade the app from React 17 to React 18 following the official migration guide, fix what breaks in the test suite, and list anything that needed a judgement call.
+opus	Some users are occasionally logged in as a different user since last week's load balancer change. Find the cause; suspects include session caching in the Redis layer and the new CDN config. Stay read-only until you have a confirmed root cause and write findings to session-bug.md.
+opus	Analytics dashboard queries got ten times slower once the events table passed 50M rows. Investigate with EXPLAIN ANALYZE on the staging copy, propose index or schema changes, and estimate the migration risk of each. Do not run migrations.
+opus	Plan how to turn the single-tenant app into a multi-tenant one: data isolation (schema per tenant or row-level security), auth changes, and a migration path for existing customers. Write a design doc with trade-offs to docs/multitenancy.md; no code changes.
+opus	The nightly pipeline produces slightly different totals when rerun on the same input. Find the source of non-determinism across the Spark jobs in pipeline/ and fix it.
+opus	Review the plugin sandbox in src/sandbox/ for ways a plugin could escape it: filesystem access, prototype pollution, reaching the host's require. Report findings with severity; don't change code.
+opus	test_order_totals fails about 1 run in 20 on CI but never locally. Find out why and fix it.

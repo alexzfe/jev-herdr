@@ -1,0 +1,15 @@
+{
+  "name": "jev-herdr",
+  "description": "Jev-routed Claude Code agents for the Herdr terminal multiplexer.",
+  "owner": {
+    "name": "alexzfe",
+    "url": "https://github.com/alexzfe"
+  },
+  "plugins": [
+    {
+      "name": "jev-herdr",
+      "description": "Spawn Claude Code agents in a background Herdr tab, with Jev choosing model and effort and stepping stuck agents up.",
+      "source": "./"
+    }
+  ]
+}

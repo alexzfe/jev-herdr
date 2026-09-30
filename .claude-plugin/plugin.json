@@ -1,0 +1,13 @@
+{
+  "name": "jev-herdr",
+  "version": "0.1.0",
+  "description": "Spawn Claude Code agents in Herdr with TypeSafe's Jev choosing each agent's model and effort, and stepping it up when it gets stuck.",
+  "author": {
+    "name": "alexzfe",
+    "url": "https://github.com/alexzfe"
+  },
+  "homepage": "https://github.com/alexzfe/jev-herdr",
+  "repository": "https://github.com/alexzfe/jev-herdr",
+  "license": "MIT",
+  "keywords": ["herdr", "jev", "typesafe", "routing", "agents", "subagents"]
+}
